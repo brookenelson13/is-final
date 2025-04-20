@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hangman Game</title>
+  <style>
+   
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background-color: #fff8f0;
+      
+    }
+    h1 {
+      color: #333;
+    }
+    #word {
+      font-size: 36px;
+      letter-spacing: 10px;
+      margin: 20px 0;
+    }
+    #letters button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: none;
+      background-color: #f28c8c;
+      color: white;
+      cursor: pointer;
+    }
+    #letters button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #message {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+    #hangman {
+      font-size: 24px;
+      white-space: pre;
+      font-family: monospace;
+      margin: 20px auto;
+      line-height: 1.2;
+    }
+    #restart {
+      margin-top: 20px;
+      display: none;
+    }
+    #restart button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #restart button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hangman Game</h1>
+  <div id="hangman"></div>
+  <p id="word">_ _ _ _ _</p>
+  <div id="letters"></div>
+  <p id="message"></p>
+  <div id="restart">
+    <button onclick="location.reload()">Try Again</button>
+  </div>
+
+  <script>
+    const words = ["apple", "banana", "grape", "peach", "lemon"];
+    const secretWord = words[Math.floor(Math.random() * words.length)];
+    let guessedLetters = [];
+    let wrongGuesses = 0;
+    const maxGuesses = 6;
+
+    const hangmanStages = [
+      `
+
+
+
+
+
+=========`,
+      `
+   |
+   |
+   |
+   |
+   |
+=========`,
+      ` +---+
+   |
+   |
+   |
+   |
+   |
+=========`,
+      ` +---+
+ |   |
+ O   |
+     |
+     |
+     |
+=========`,
+      ` +---+
+ |   |
+ O   |
+ |   |
+     |
+     |
+=========`,
+      ` +---+
+ |   |
+ O   |
+/|\  |
+     |
+     |
+=========`,
+      ` +---+
+ |   |
+ O   |
+/|\  |
+/ \  |
+     |
+=========`
+    ];
+
+    function displayWord() {
+      let display = "";
+      for (let letter of secretWord) {
+        display += guessedLetters.includes(letter) ? letter.toUpperCase() + " " : "_ ";
+      }
+      document.getElementById("word").textContent = display.trim();
+    }
+
+    function updateHangman() {
+      document.getElementById("hangman").textContent = hangmanStages[wrongGuesses];
+    }
+
+    function createLetterButtons() {
+      const lettersDiv = document.getElementById("letters");
+      const alphabet = "abcdefghijklmnopqrstuvwxyz";
+      for (let letter of alphabet) {
+        const btn = document.createElement("button");
+        btn.textContent = letter.toUpperCase();
+        btn.onclick = () => handleGuess(letter, btn);
+        lettersDiv.appendChild(btn);
+      }
+    }
+
+    function handleGuess(letter, button) {
+      button.disabled = true;
+      if (secretWord.includes(letter)) {
+        guessedLetters.push(letter);
+      } else {
+        wrongGuesses++;
+        updateHangman();
+      }
+      displayWord();
+      checkGameStatus();
+    }
+
+    function checkGameStatus() {
+      const wordDisplay = document.getElementById("word").textContent.replace(/\s/g, "").toLowerCase();
+      if (wordDisplay === secretWord) {
+        document.getElementById("message").textContent = "🎉 You guessed it!";
+        disableAllButtons();
+        showRestart();
+      } else if (wrongGuesses >= maxGuesses) {
+        document.getElementById("message").textContent = `😢 You lost! The word was: ${secretWord.toUpperCase()}`;
+        disableAllButtons();
+        showRestart();
+      }
+    }
+
+    function disableAllButtons() {
+      document.querySelectorAll("#letters button").forEach(btn => btn.disabled = true);
+    }
+
+    function showRestart() {
+      document.getElementById("restart").style.display = "block";
+    }
+
+    displayWord();
+    updateHangman();
+    createLetterButtons();
+  </script>
+  <body>
+    <h1>Hangman Game</h1>
+    <!-- your game content here -->
+  
+    <!-- link to scratch page -->
+    <a href="scratch.html">
+      <button>Go to Scratch Page</button>
+    </a>
+  </body>
+</body>
+</html>
